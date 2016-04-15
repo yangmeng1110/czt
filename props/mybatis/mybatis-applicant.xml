@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weiyin.cztqt.applicant.model.Applicant">
+	
+	<select id="getAppBySyncInsuStatus" resultType="applicant">
+		SELECT	
+			ID ,
+			REALNAME,
+			MOBILE ,
+			CARCODE ,
+			STATUS ,
+			REFEREES ,
+			OPERTIME ,
+			LOANMONEY ,
+			REBATEMONEY ,
+			INSUSTATUS,
+			INSUREMARK ,
+			REMARK,
+			SYNCAPPSTATUS,
+			SYNCINSUSTATUS
+		FROM T_APPLICANT
+		WHERE SYNCINSUSTATUS != 0
+	</select>
+	
+	<select id="getAppByPage" resultType="applicant" parameterType="java.util.Map">
+		SELECT	
+			ID ,
+			REALNAME,
+			MOBILE ,
+			CARCODE ,
+			STATUS ,
+			REFEREES,
+			OPERTIME ,
+			LOANMONEY ,
+			REBATEMONEY ,
+			INSUSTATUS,
+			INSUREMARK ,
+			REMARK,
+			SYNCAPPSTATUS,
+			SYNCINSUSTATUS
+		FROM T_APPLICANT
+		<where>
+			<if test="userName != null and userName != ''">
+				REFEREES = #{userName} 
+			</if>
+			<if test="carCode != null and carCode !=''">
+	   			AND CARCODE LIKE CONCAT('%',#{carCode},'%')
+	   		</if>
+	   			<if test="insuStatus != null and insuStatus != ''">
+				AND INSUSTATUS =#{insuStatus}
+			</if>
+			<if test="date_from != null and date_from != ''">
+				AND DATE_FORMAT(OPERTIME,'%Y-%m-%d') >= DATE_FORMAT(#{date_from},'%Y-%m-%d')
+			</if>
+			<if test="date_to != null and date_to != ''">
+			<![CDATA[
+				AND DATE_FORMAT(OPERTIME,'%Y-%m-%d') <= DATE_FORMAT(#{date_to},'%Y-%m-%d')
+				]]>
+			</if>
+			<if test="status != null">
+				AND STATUS=#{status}
+			</if>
+			<if test="carCode != null and carCode != ''">
+				AND CARCODE LIKE CONCAT('%',#{carCode},'%')
+			</if>
+		</where>		
+		LIMIT #{page},#{pageSize}
+	</select>
+	
+	<select id="getAppCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM T_APPLICANT
+		<where>
+			<if test="userName != null and userName != ''">
+				REFEREES = #{userName} 
+			</if>
+			<if test="carCode != null and carCode !=''">
+	   			AND CARCODE LIKE CONCAT('%',#{carCode},'%')
+	   		</if>
+	   			<if test="insuStatus != null and insuStatus != ''">
+				AND INSUSTATUS =#{insuStatus}
+			</if>
+			<if test="date_from != null and date_from != ''">
+				AND DATE_FORMAT(OPERTIME,'%Y-%m-%d') >= DATE_FORMAT(#{date_from},'%Y-%m-%d')
+			</if>
+			<if test="date_to != null and date_to != ''">
+			<![CDATA[
+				AND DATE_FORMAT(OPERTIME,'%Y-%m-%d') <= DATE_FORMAT(#{date_to},'%Y-%m-%d')
+				]]>
+			</if>
+			<if test="status != null">
+				AND STATUS=#{status}
+			</if>
+			<if test="carCode != null and carCode != ''">
+				AND CARCODE LIKE CONCAT('%',#{carCode},'%')
+			</if>
+		</where>		
+	</select>
+	
+	<insert id="saveApp" parameterType="applicant" keyColumn="id" useGeneratedKeys="true">
+		insert into T_APPLICANT(
+			REALNAME,
+			MOBILE ,
+			CARCODE ,
+			STATUS ,
+			REFEREES,
+			OPERTIME ,
+			LOANMONEY ,
+			REBATEMONEY ,
+			INSUSTATUS,
+			INSUREMARK ,
+			REMARK,
+			SYNCAPPSTATUS,
+			SYNCINSUSTATUS
+		)VALUES(
+			#{realName,jdbcType=VARCHAR},
+			#{mobile,jdbcType=VARCHAR},
+			#{carCode,jdbcType=VARCHAR},
+			0,
+			#{referees,jdbcType=VARCHAR},
+			NOW(),
+			0,
+			0,
+			0,
+			#{insuRemark,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			0,
+			0
+		)
+	</insert>
+	<update id="updateApp" parameterType="applicant">
+		UPDATE T_APPLICANT SET 
+				<if test="loanMoney !=0 ">
+					LOANMONEY=#{loanMoney,jdbcType=INTEGER},
+				</if>
+				<if test="rebateMoney != 0">
+					REBATEMONEY=#{rebateMoney,jdbcType=DOUBLE},
+				</if>
+				<if test="status != 0">
+					STATUS=#{status,jdbcType=INTEGER},
+				</if>
+				<if test="insuStatus !=0">
+					INSUSTATUS=#{insuStatus,jdbcType=INTEGER},
+				</if>
+				<if test="insuRemark != null and insuRemark !=''">
+					INSUREMARK=#{insuRemark,jdbcType=VARCHAR},
+				</if>
+				<if test="remark != null and remark !=''">
+					REMARK=#{remark,jdbcType=VARCHAR}
+				</if>
+				<if test="syncInsuStatus==1">
+					SYNCINSUSTATUS=#{syncInsuStatus,jdbcType=INTEGER}
+				</if>
+			WHERE ID=#{id}
+	</update>
+
+	
+	<update id="updateSyncAppStatusById" parameterType="java.lang.Integer">
+		UPDATE T_APPLICANT SET SYNCAPPSTATUS=1
+		WHERE ID=#{id}
+	</update>
+	
+	<update id="updateSyncInsuStatusById" parameterType="java.lang.Integer">
+		UPDATE T_APPLICANT SET SYNCINSUSTATUS=0
+		WHERE ID=#{id}
+	</update>
+	
+	<select id="getAppById" resultType="applicant" parameterType="java.lang.Integer">
+		SELECT	
+			ID ,
+			REALNAME,
+			MOBILE ,
+			CARCODE ,
+			STATUS ,
+			REFEREES ,
+			OPERTIME ,
+			LOANMONEY ,
+			REBATEMONEY ,
+			INSUSTATUS,
+			INSUREMARK,
+			REMARK 
+		FROM T_APPLICANT
+		WHERE ID=#{id}	
+	</select>
+	
+	<select id="getAppBySyncAppStatus" resultType="applicant">
+		SELECT	
+			ID ,
+			REALNAME,
+			MOBILE ,
+			CARCODE ,
+			STATUS ,
+		    REFEREES ,
+			OPERTIME ,
+			LOANMONEY ,
+			REBATEMONEY ,
+			INSUSTATUS,
+			INSUREMARK ,
+			REMARK 
+		FROM T_APPLICANT
+		WHERE SYNCAPPSTATUS=0	
+	</select>
+	
+	<delete id="deleteAppById" parameterType="java.lang.Integer">
+		DELETE FROM T_APPLICANT
+		WHERE ID=#{id}
+	</delete>
+</mapper>
