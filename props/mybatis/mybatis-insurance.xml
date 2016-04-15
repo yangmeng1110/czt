@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weiyin.czt.insurance.model.Insurance">
+		<select id="getInsuranceById" resultType="insurance" parameterType="java.lang.Integer">
+			SELECT
+			ID,
+   			REALNAME,
+   			USERNAME,
+   			PASSWORD,
+   			MOBILE,
+   			INSUNAME,
+   			INSUADDR,
+   			REMARK ,
+   			USERTYPE
+   			FROM T_INSURANCE
+   		WHERE ID=#{id}
+		</select>
+		
+		<select id="getInsuranceByUname" resultType="insurance" parameterType="java.lang.String">
+			SELECT
+			ID,
+   			REALNAME,
+   			USERNAME,
+   			PASSWORD,
+   			MOBILE,
+   			INSUNAME,
+   			INSUADDR,
+   			REMARK ,
+   			USERTYPE
+   			FROM T_INSURANCE
+   		WHERE USERNAME=#{userName}
+		</select>
+		
+		
+		<insert id="saveInsurance" parameterType="insurance" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+			INSERT INTO T_INSURANCE(
+				REALNAME,
+	   			USERNAME,
+	   			PASSWORD,
+	   			MOBILE,
+	   			INSUNAME,
+	   			INSUADDR,
+	   			REMARK ,
+	   			USERTYPE
+			)VALUES(
+				#{realName,jdbcType=VARCHAR},
+				#{userName,jdbcType=VARCHAR},
+				#{password,jdbcType=VARCHAR},
+				#{mobile,jdbcType=VARCHAR},
+				#{insuName,jdbcType=VARCHAR},
+				#{insuAddr,jdbcType=VARCHAR},
+				#{remark,jdbcType=VARCHAR},
+				'bxgs'
+			)
+		</insert>
+		
+		<update id="updateInsurance" parameterType="insurance">
+			UPDATE T_INSURANCE SET 
+			REALNAME=#{realName,jdbcType=VARCHAR},
+			USERNAME=#{userName,jdbcType=VARCHAR},
+			MOBILE=#{mobile,jdbcType=VARCHAR},
+			INSUNAME=#{insuName,jdbcType=VARCHAR},
+			INSUADDR=#{insuName,jdbcType=VARCHAR},
+			REMARK=#{remark,jdbcType=VARCHAR}
+			WHERE ID=#{id}
+		</update>
+</mapper>
